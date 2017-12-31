@@ -1,0 +1,92 @@
+@media (min-width: 1120px) {
+  .ticket_submit_buttons:not(.followup)>button {
+    display: none;
+  }
+
+  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu {
+    display: inline-block;
+    top: inherit !important;
+    bottom: inherit !important;
+    right: inherit !important;
+    left: inherit !important;
+    position: relative !important;
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0px !important;
+  }
+
+  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li,
+  div.post-save-actions>div.dropdown-container>span.dropdown-toggle {
+    border: 1px solid #d3d3d3 !important;
+    margin-top: 8px !important;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+    padding: 8px 5px;
+  }
+
+  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li {
+    display: inline-block;
+    font-size: 0px !important;
+    color: #fff !important;
+    width: 55px;
+    height: 18px;
+    text-align: center;
+    padding-bottom: 7px;
+  }
+
+  div.post-save-actions>div.dropdown-container>span.dropdown-toggle {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    padding-left: 10px;
+  }
+
+  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li:last-child {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+
+  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li {
+    border-left: none !important;
+  }
+
+  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li strong {
+    font-size: 12px !important;
+  }
+
+  .ticket_submit_buttons>ul.dropdown-menu li.new {
+    background: #F5CA00;
+  }
+
+  .ticket_submit_buttons>ul.dropdown-menu li.open {
+    background: #E82A2A;
+  }
+
+  .ticket_submit_buttons>ul.dropdown-menu li.pending {
+    background: #59BBE0;
+  }
+
+  .ticket_submit_buttons>ul.dropdown-menu li.hold {
+    background: #000;
+  }
+
+  .ticket_submit_buttons>ul.dropdown-menu li.solved {
+    background: #828282;
+  }
+
+  .ticket_submit_buttons:not(.followup) li.status:not(.disabled):after {
+    content: none !important;
+  }
+
+  div.post-save-actions>div.dropdown-container>span.dropdown-toggle:hover,
+  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li:hover {
+    border-color: #aaa !important;
+    border-left: 1px solid #aaa !important;
+    margin-left: -1px !important;
+    z-index: 1000;
+  }
+
+  div.post-save-actions {
+    margin-right: 0px !important;
+  }
+}
