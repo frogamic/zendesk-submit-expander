@@ -1,4 +1,8 @@
 @media (min-width: 1120px) {
+  div.post-save-actions {
+    margin-right: 0px !important;
+  }
+
   div:not(.modal-footer)>div.ticket_submit_buttons:not(.followup)>button {
     display: none;
   }
@@ -22,12 +26,27 @@
   }
 
   .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li,
-  div.post-save-actions>div.dropdown-container>span.dropdown-toggle {
+  div.post-save-actions>div.dropdown-container>span.dropdown-toggle,
+  div.ticket-resolution-footer-pane>button.next {
     border: 1px solid #d3d3d3 !important;
     margin-top: 8px !important;
     margin-left: 0px !important;
     margin-right: 0px !important;
     padding: 8px 5px;
+  }
+
+  div.ticket-resolution-footer-pane>button.next {
+    border: 1px solid #d3d3d3 !important;
+    border-left: none !important;
+    border-right: none !important;
+    height: 35px;
+    border-radius: 0px;
+    margin-top: 7px !important;
+    margin-left: -1px !important;
+    margin-right: 0px !important;
+    padding: 6px 5px;
+    font-size: 12px !important;
+    Font-weight: bold !important;
   }
 
   div.modal-footer>div.ticket_submit_buttons>button.save {
@@ -112,11 +131,10 @@
     border-left: 1px solid #aaa !important;
     margin-left: -1px !important;
     z-index: 1000;
-    background-color: #333;
   }
 
-
-  div.post-save-actions {
-    margin-right: 0px !important;
+  div.ticket-resolution-footer-pane>button.next:hover {
+    border: 1px solid #aaa !important;
+    z-index: 1000;
   }
 }
