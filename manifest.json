@@ -1,6 +1,6 @@
 {
     "name": "Zendesk Submit Expander",
-    "version": "0.7",
+    "version": "0.8",
     "manifest_version": 2,
 
     "description": "Takes the ticket submit buttons from the drop-up box in the Zendesk agent view and puts them into a button group instead.",
