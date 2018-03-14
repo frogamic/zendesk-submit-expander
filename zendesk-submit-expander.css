@@ -1,6 +1,6 @@
 @media (min-width: 1120px) {
   div.post-save-actions {
-    margin-right: 0px !important;
+    margin: 0px !important;
   }
 
   div:not(.modal-footer)>div.ticket_submit_buttons:not(.followup)>button {
@@ -73,6 +73,10 @@
   }
 
   div.post-save-actions>div.dropdown-container>span.dropdown-toggle {
+    display: inline-block;
+    height: 18px;
+    margin-top: 7px !important;
+    padding-bottom: 7px;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
     padding-left: 10px;
