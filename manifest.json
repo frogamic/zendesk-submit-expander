@@ -20,7 +20,7 @@
         {
             "matches": ["*://*.zendesk.com/agent/*"],
             "css": ["zendesk-submit-expander.css"],
-            "js": ["jquery-3.3.1-min.js","zendesk-submit-expander.js"]
+            "js": ["zendesk-submit-expander.js"]
         }
     ]
 }

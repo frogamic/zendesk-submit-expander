@@ -1,12 +1,61 @@
-.MenuContainer__MenuWrapper-blwEAZ {
-  display: none;
+.zse-status-New { --color-background: rgb(245,202,0); }
+
+.zse-status-Open { --color-background: rgb(232,42,42); }
+
+.zse-status-Pending { --color-background: rgb(89,187,224); }
+
+.zse-status-Hold { --color-background: rgb(47,57,65); }
+
+.zse-status-Solved { --color-background: rgb(130,130,130); }
+
+.zse-group {
+  padding-top: 2px;
 }
 
-#zse-buttons>button {
-  height: 40px;
-  padding-left: 10px;
-  padding-right: 10px;
-  max-width: 75px !important;
-  min-width: 55px !important;
-  width: 75px !important;
+.zse-group button {
+  height: 35px;
+  padding-left: 5px;
+  padding-right: 5px;
+  line-height: 18px;
+  font-size: 14px;
+  color: #2F3941;
+  max-width: 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+}
+
+.zse-group button span {
+  font-size: 99%;
+}
+
+.zse-group button span::before {
+  content: " ";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background-color: var(--color-background);
+  margin-right: 3px;
+}
+
+.zse-group button.is-selected {
+  background-color: #E9EBED;
+  font-weight: 550;
+}
+
+@media screen and (max-width: 1220px) {
+  .ticket-resolution-footer,
+  .ticket-resolution-footer-pane {
+    height: 98px !important;
+  }
+
+  .action_buttons {
+    width: 100% !important;
+  }
+
+  .macro-selector {
+    width: auto !important;
+    display: block !important;
+    margin: 7px 10px 7px 10px !important;
+  }
 }
