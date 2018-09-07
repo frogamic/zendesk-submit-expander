@@ -54,23 +54,22 @@ const submitExpander = (buttonGroup) => {
 
 const buttonGroupFinder = (mutations) => {
     mutations.forEach((mutation) => {
-        if (mutation.target.className === 'ember-view workspace') {
-            mutation.target.querySelectorAll(`div[data-garden-id="${BUTTON_GROUP_GARDEN_ID}"]`).forEach(submitExpander);
-        }
+        mutation.target.querySelectorAll(`div[data-garden-id="${BUTTON_GROUP_GARDEN_ID}"]`).forEach(submitExpander);
     });
 };
 
 const mutationLoader = () => {
-    if (document.readyState === 'complete') {
+    console.log('looking for #main_panes');
+    const mainPanes = document.getElementById('main_panes');
+    if (mainPanes) {
         const observer = new MutationObserver(buttonGroupFinder);
-        observer.observe(document.getElementsByTagName('BODY')[0], { childList: true, subtree: true });
+        observer.observe(mainPanes, { childList: true });
+        console.log('listening');
         document.querySelectorAll(`div[data-garden-id="${BUTTON_GROUP_GARDEN_ID}"]`).forEach(submitExpander);
-        return true;
+        console.log('scanned');
     } else {
-        return false;
+        window.setTimeout(mutationLoader, 100);
     }
 };
 
-if (!mutationLoader()) {
-    document.onreadystatechange = mutationLoader;
-}
+mutationLoader();
