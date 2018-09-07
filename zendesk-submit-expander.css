@@ -43,6 +43,11 @@
   font-weight: 550;
 }
 
+/* Hide the default button */
+div[data-garden-id='buttons.button_group_view'] {
+  display: none;
+}
+
 @media screen and (max-width: 1220px) {
   .ticket-resolution-footer,
   .ticket-resolution-footer-pane {
