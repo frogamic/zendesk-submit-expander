@@ -26,28 +26,42 @@ const newButtonGroup = (statuses = ['New', 'Open', 'Pending', 'Hold', 'Solved'],
 };
 
 const submitExpander = (buttonGroup) => {
-    if (!buttonGroup.dataset.zseExpanded) {
+    if (buttonGroup.dataset.zseExpanded !== 'true') {
         const submit = buttonGroup.querySelector('button[data-garden-id="buttons.button"]');
         const expand = buttonGroup.querySelector('button[data-garden-id="buttons.icon_button"]');
         const currentStatus = submit.getElementsByTagName('STRONG')[0];
         if (currentStatus.innerText) {
             console.log('expanding button group now');
+            const zseButtons = newButtonGroup(undefined, undefined, currentStatus.innerText);
+            buttonGroup.parentNode.appendChild(zseButtons);
             buttonGroup.dataset.zseExpanded = true;
-            buttonGroup.style.display = 'none';
-            buttonGroup.parentNode.appendChild(newButtonGroup(undefined, undefined, currentStatus.innerText));
+            const updater = new MutationObserver ((mutations) => {
+                mutations.forEach((mutation) => {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.tagName === 'STRONG') {
+                            console.log('recreating button group');
+                            updater.disconnect();
+                            zseButtons.remove();
+                            buttonGroup.dataset.zseExpanded = false;
+                            submitExpander(buttonGroup);
+                        }
+                    });
+                });
+            });
+            updater.observe(currentStatus.parentNode, { childList: true });
         } else {
             const retry = new MutationObserver ((mutations) => {
                 mutations.forEach((mutation) => {
                     mutation.addedNodes.forEach((node) => {
                         if (node.tagName === 'STRONG' && node.innerText) {
+                            retry.disconnect();
                             console.log('retry observer');
                             submitExpander(buttonGroup);
-                            retry.disconnect();
                         }
                     });
                 });
             });
-            retry.observe(currentStatus.parentNode, {childList: true, characterData: true, subtree: true});
+            retry.observe(currentStatus.parentNode, { childList: true });
         }
     }
 };
