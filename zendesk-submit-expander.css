@@ -49,6 +49,17 @@ div[data-garden-id='buttons.button_group_view'] {
   display: none;
 }
 
+/* Beta branding */
+#z-icon::before {
+  content: "ZSE Beta";
+  font-size: 12px;
+  font-weight: 500;
+}
+
+#z-icon {
+  bottom: 2.5em !important;
+}
+
 @media screen and (max-width: 1220px) {
   .ticket-resolution-footer,
   .ticket-resolution-footer-pane {
