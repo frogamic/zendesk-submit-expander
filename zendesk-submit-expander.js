@@ -77,18 +77,43 @@ const submitExpander = (buttonGroup) => {
                     mutations.forEach((mutation) => {
                         mutation.addedNodes.forEach((node) => {
                             if (node.tagName === 'STRONG') {
-                                console.log('recreating button group');
-                                updater.disconnect();
-                                zseButtons.remove();
-                                buttonGroup.dataset.zseExpanded = false;
-                                submitExpander(buttonGroup);
+                                const updateFunction = () => {
+                                    console.log('recreating button group');
+                                    updater.disconnect();
+                                    zseButtons.remove();
+                                    buttonGroup.dataset.zseExpanded = false;
+                                    submitExpander(buttonGroup);
+                                };
+                                let parent = buttonGroup.parentNode;
+                                while (parent.tagName !== 'SECTION') {
+                                    parent = parent.parentNode;
+                                }
+                                if (parent.classList.contains('working')) {
+                                    console.log('waiting for ticket to submit');
+                                    const updateDelay = new MutationObserver((mutations) => {
+                                        let ready = false;
+                                        mutations.forEach((mutation) => {
+                                            console.log(mutation);
+                                            if (mutation.attributeName === 'class' && !parent.classList.contains('working')) {
+                                                ready = true;
+                                            }
+                                        });
+                                        if (ready) {
+                                            console.log('ticket is submitted');
+                                            updateDelay.disconnect();
+                                            window.setTimeout(updateFunction, 1);
+                                        }
+                                    });
+                                    updateDelay.observe(parent, { attributes: true });
+                                } else {
+                                    console.log('No delay, updating');
+                                    updateFunction();
+                                }
                             }
                         });
                     });
                 });
-                if (currentStatus.parentNode) {
-                    updater.observe(currentStatus.parentNode, { childList: true });
-                }
+                updater.observe(buttonGroup, { childList: true, subtree: true });
             });
             expand.click();
         } else {
