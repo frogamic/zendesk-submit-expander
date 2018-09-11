@@ -61,6 +61,10 @@ div[data-garden-id='buttons.button_group_view'] {
 }
 
 @media screen and (max-width: 1220px) {
+  .split_pane.ticket > .pane.right {
+    bottom: 100px !important;
+  }
+
   .ticket-resolution-footer,
   .ticket-resolution-footer-pane {
     height: 98px !important;

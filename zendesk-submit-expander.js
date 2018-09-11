@@ -25,7 +25,7 @@ const newButtonGroup = (statuses, expander, activeStatus) => {
     return buttonGroup;
 };
 
-const generateDropUpFinder = (handler) => {
+const generateDropUpFinder = (expander, handler) => {
     const finder = new MutationObserver ((mutations) => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
@@ -39,49 +39,51 @@ const generateDropUpFinder = (handler) => {
         });
     });
     finder.observe(document.getElementsByTagName('BODY')[0], { childList: true });
+    console.log('Triggering submit menu');
+    expander.click();
 };
 
 const generateClicker = (status, expander) => {
     console.log(`Making clicker for ${status}`);
     return () => {
-        console.log('Click handler called');
-        generateDropUpFinder((menu) => {
+        console.log(`${status} click handler called`);
+        generateDropUpFinder(expander, (menu) => {
             menu.childNodes.forEach((x) => {
-                if (x.id.match(new RegExp(`.*-${status}$`, 'i'))) {
-                    console.log(`Clicking ${status}`);
+                if (x.innerText.trim().match(new RegExp(`.*${status}$`, 'i'))) {
+                    console.log(`Clicking ${x.innerText.trim()}`);
                     x.click();
                 }
             });
         });
-        expander.click();
     };
 };
 
 const submitExpander = (buttonGroup) => {
     if (buttonGroup.dataset.zseExpanded !== 'true') {
         const submit = buttonGroup.querySelector('button[data-garden-id="buttons.button"]');
-        const expand = buttonGroup.querySelector('button[data-garden-id="buttons.icon_button"]');
+        const expander = buttonGroup.querySelector('button[data-garden-id="buttons.icon_button"]');
         const currentStatus = submit.getElementsByTagName('STRONG')[0];
         if (currentStatus.innerText) {
-            console.log('expanding button group now');
+            console.log('Expanding button group now');
             buttonGroup.dataset.zseExpanded = true;
-            generateDropUpFinder((menu) => {
+            generateDropUpFinder(expander, (menu) => {
                 let buttons = [];
                 menu.childNodes.forEach((x) => {
                     buttons.push(x.getElementsByTagName('STRONG')[0].innerText);
                 });
                 document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
-                const zseButtons = newButtonGroup(buttons, expand, currentStatus.innerText);
+                const zseButtons = newButtonGroup(buttons, expander, currentStatus.innerText);
                 buttonGroup.parentNode.appendChild(zseButtons);
                 const updater = new MutationObserver ((mutations) => {
                     mutations.forEach((mutation) => {
                         mutation.addedNodes.forEach((node) => {
                             if (node.tagName === 'STRONG') {
+                                console.log('Ticket status has changed, recreating button group');
                                 const updateFunction = () => {
-                                    console.log('recreating button group');
                                     updater.disconnect();
                                     zseButtons.remove();
                                     buttonGroup.dataset.zseExpanded = false;
+                                    console.log('Updater triggering submitExpander');
                                     submitExpander(buttonGroup);
                                 };
                                 let parent = buttonGroup.parentNode;
@@ -93,7 +95,6 @@ const submitExpander = (buttonGroup) => {
                                     const updateDelay = new MutationObserver((mutations) => {
                                         let ready = false;
                                         mutations.forEach((mutation) => {
-                                            console.log(mutation);
                                             if (mutation.attributeName === 'class' && !parent.classList.contains('working')) {
                                                 ready = true;
                                             }
@@ -101,12 +102,11 @@ const submitExpander = (buttonGroup) => {
                                         if (ready) {
                                             console.log('ticket is submitted');
                                             updateDelay.disconnect();
-                                            window.setTimeout(updateFunction, 1);
+                                            window.setTimeout(updateFunction, 2);
                                         }
                                     });
                                     updateDelay.observe(parent, { attributes: true });
                                 } else {
-                                    console.log('No delay, updating');
                                     updateFunction();
                                 }
                             }
@@ -115,14 +115,13 @@ const submitExpander = (buttonGroup) => {
                 });
                 updater.observe(buttonGroup, { childList: true, subtree: true });
             });
-            expand.click();
         } else {
             const retry = new MutationObserver ((mutations) => {
                 mutations.forEach((mutation) => {
                     mutation.addedNodes.forEach((node) => {
                         if (node.tagName === 'STRONG' && node.innerText) {
                             retry.disconnect();
-                            console.log('retry observer');
+                            console.log(`Retrying to make button group in '${node.innerText}' state`);
                             submitExpander(buttonGroup);
                         }
                     });
@@ -130,12 +129,19 @@ const submitExpander = (buttonGroup) => {
             });
             retry.observe(currentStatus.parentNode, { childList: true });
         }
+    } else {
+        console.log('Aborting, button group already expanded');
     }
 };
 
 const buttonGroupFinder = (mutations) => {
     mutations.forEach((mutation) => {
-        mutation.target.querySelectorAll(`div[data-garden-id="${BUTTON_GROUP_GARDEN_ID}"]`).forEach(submitExpander);
+        mutation.addedNodes.forEach((node) => {
+            console.dir(node);
+            const buttons = node.querySelectorAll(`.ticket-resolution-footer div[data-garden-id="${BUTTON_GROUP_GARDEN_ID}"]`);
+            console.log(buttons);
+            buttons.forEach((x) => {console.log('Main finder triggering submitExpander'); submitExpander(x)});
+        });
     });
 };
 
