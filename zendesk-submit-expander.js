@@ -1,7 +1,8 @@
 HTMLCollection.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
 HTMLCollection.prototype.forEach = Array.prototype.forEach;
 
-const BUTTON_GROUP_GARDEN_ID = 'buttons.button_group_view';
+let backupRetry, menuHandler, menuFinder;
+const BUTTON_GROUP_SELECTOR = '.ticket-resolution-footer div[data-garden-id="buttons.button_group_view"]';
 
 const newButton = (status, handler, selected = false) => {
     const button = document.createElement('button');
@@ -26,19 +27,31 @@ const newButtonGroup = (statuses, expander, activeStatus) => {
 };
 
 const generateDropUpFinder = (expander, handler) => {
-    const finder = new MutationObserver ((mutations) => {
+    if (menuHandler) {
+        console.log('Replacing menuHandler');
+        document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
+    }
+    menuHandler = handler;
+
+    if (menuFinder) {
+        console.log('Replacing menuFinder');
+        menuFinder.disconnect();
+        document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
+    }
+    menuFinder = new MutationObserver ((mutations) => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
                 const menu = node.querySelector ? node.querySelector('ul[data-garden-id="menus.menu_view"]') : undefined;
                 if (menu) {
                     console.log('Menu found');
-                    finder.disconnect();
-                    handler(menu);
+                    menuFinder.disconnect();
+                    menuFinder = undefined;
+                    menuHandler(menu);
                 }
             });
         });
     });
-    finder.observe(document.getElementsByTagName('BODY')[0], { childList: true });
+    menuFinder.observe(document.getElementsByTagName('BODY')[0], { childList: true });
     console.log('Triggering submit menu');
     expander.click();
 };
@@ -59,13 +72,22 @@ const generateClicker = (status, expander) => {
 };
 
 const submitExpander = (buttonGroup) => {
-    if (buttonGroup.dataset.zseExpanded !== 'true') {
+    let expanded = false;
+    buttonGroup.parentNode.childNodes.forEach((x) => {
+        if (x.classList.contains('zse-group')) {
+            expanded = true;
+        }
+    });
+    if (!expanded) {
         const submit = buttonGroup.querySelector('button[data-garden-id="buttons.button"]');
         const expander = buttonGroup.querySelector('button[data-garden-id="buttons.icon_button"]');
         const currentStatus = submit.getElementsByTagName('STRONG')[0];
         if (currentStatus.innerText) {
+            if (backupRetry) {
+                clearTimeout(backupRetry);
+                backupRetry = undefined;
+            }
             console.log('Expanding button group now');
-            buttonGroup.dataset.zseExpanded = true;
             generateDropUpFinder(expander, (menu) => {
                 let buttons = [];
                 menu.childNodes.forEach((x) => {
@@ -82,7 +104,6 @@ const submitExpander = (buttonGroup) => {
                                 const updateFunction = () => {
                                     updater.disconnect();
                                     zseButtons.remove();
-                                    buttonGroup.dataset.zseExpanded = false;
                                     console.log('Updater triggering submitExpander');
                                     submitExpander(buttonGroup);
                                 };
@@ -102,7 +123,7 @@ const submitExpander = (buttonGroup) => {
                                         if (ready) {
                                             console.log('ticket is submitted');
                                             updateDelay.disconnect();
-                                            window.setTimeout(updateFunction, 2);
+                                            window.setTimeout(updateFunction, 5);
                                         }
                                     });
                                     updateDelay.observe(parent, { attributes: true });
@@ -115,6 +136,7 @@ const submitExpander = (buttonGroup) => {
                 });
                 updater.observe(buttonGroup, { childList: true, subtree: true });
             });
+            backupRetry = window.setTimeout(() => submitExpander(buttonGroup), 10);
         } else {
             const retry = new MutationObserver ((mutations) => {
                 mutations.forEach((mutation) => {
@@ -138,9 +160,9 @@ const buttonGroupFinder = (mutations) => {
     mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
             console.dir(node);
-            const buttons = node.querySelectorAll(`.ticket-resolution-footer div[data-garden-id="${BUTTON_GROUP_GARDEN_ID}"]`);
+            const buttons = node.querySelectorAll(BUTTON_GROUP_SELECTOR);
             console.log(buttons);
-            buttons.forEach((x) => {console.log('Main finder triggering submitExpander'); submitExpander(x)});
+            buttons.forEach((x) => {console.log('Main finder triggering submitExpander'); submitExpander(x);});
         });
     });
 };
@@ -152,7 +174,7 @@ const mutationLoader = () => {
         const observer = new MutationObserver(buttonGroupFinder);
         observer.observe(mainPanes, { childList: true });
         console.log('listening');
-        document.querySelectorAll(`div[data-garden-id="${BUTTON_GROUP_GARDEN_ID}"]`).forEach(submitExpander);
+        document.querySelectorAll(BUTTON_GROUP_SELECTOR).forEach(submitExpander);
         console.log('scanned');
     } else {
         window.setTimeout(mutationLoader, 100);
