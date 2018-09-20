@@ -47,6 +47,7 @@ const generateDropUpFinder = (expander, handler) => {
                     menuFinder.disconnect();
                     menuFinder = undefined;
                     menuHandler(menu);
+                    menuHandler = undefined;
                 }
             });
         });
