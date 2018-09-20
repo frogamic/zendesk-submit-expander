@@ -42,7 +42,7 @@ const generateDropUpFinder = (expander, handler) => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
                 const menu = node.querySelector ? node.querySelector('ul[data-garden-id="menus.menu_view"]') : undefined;
-                if (menu) {
+                if (menu && menu.innerText.match(/.*submit as open.*/i)) {
                     console.log('Menu found');
                     menuFinder.disconnect();
                     menuFinder = undefined;

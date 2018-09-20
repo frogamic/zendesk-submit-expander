@@ -44,7 +44,6 @@
 }
 
 /* Hide the default button and menu */
-ul[data-garden-id="menus.menu_view"],
 .ticket-resolution-footer div[data-garden-id='buttons.button_group_view'] {
   display: none;
 }
