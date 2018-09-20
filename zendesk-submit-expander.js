@@ -137,7 +137,7 @@ const submitExpander = (buttonGroup) => {
                 });
                 updater.observe(buttonGroup, { childList: true, subtree: true });
             });
-            backupRetry = window.setTimeout(() => submitExpander(buttonGroup), 10);
+            backupRetry = window.setTimeout(() => submitExpander(buttonGroup), 30);
         } else {
             const retry = new MutationObserver ((mutations) => {
                 mutations.forEach((mutation) => {
