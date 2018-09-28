@@ -1,12 +1,12 @@
-.zse-status-New { --color-background: rgb(245,202,0); }
+.zse-status-New { --color-background: #F5CA00; }
 
-.zse-status-Open { --color-background: rgb(232,42,42); }
+.zse-status-Open { --color-background: #E82A2A; }
 
-.zse-status-Pending { --color-background: rgb(89,187,224); }
+.zse-status-Pending { --color-background: #259ECB; }
 
-.zse-status-On-hold { --color-background: rgb(47,57,65); }
+.zse-status-On-hold { --color-background: #2F3941; }
 
-.zse-status-Solved { --color-background: rgb(130,130,130); }
+.zse-status-Solved { --color-background: #68737D; }
 
 .zse-group {
   padding-top: 2px;
