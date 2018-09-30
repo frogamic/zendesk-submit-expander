@@ -44,7 +44,7 @@
 }
 
 /* Hide the default button and menu */
-.ticket-resolution-footer div[data-garden-id='buttons.button_group_view'] {
+.workspace.zse-expanded .ticket-resolution-footer div[data-garden-id='buttons.button_group_view'] {
   display: none;
 }
 

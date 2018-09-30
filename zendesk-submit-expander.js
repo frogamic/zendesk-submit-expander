@@ -1,8 +1,29 @@
 HTMLCollection.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
 HTMLCollection.prototype.forEach = Array.prototype.forEach;
+NodeList.prototype.map = Array.prototype.map;
 
-let backupRetry, menuHandler, menuFinder;
+let backupRetry, menuHandler, menuFinder, buttonUpdater, zseButtons;
 const BUTTON_GROUP_SELECTOR = '.ticket-resolution-footer div[data-garden-id="buttons.button_group_view"]';
+
+const clearState = () => {
+    if (backupRetry) {
+        console.log('Clearing backupRetry timer');
+        window.clearTimeout(backupRetry);
+    }
+    if (buttonUpdater) {
+        console.log('Disconnecting buttonUpdater');
+        buttonUpdater.disconnect();
+    }
+    if (menuFinder) {
+        console.log('Disconnecting menuFinder and clicking out of menu for good measure');
+        menuFinder.disconnect();
+        document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
+    }
+    backupRetry = undefined;
+    menuFinder = undefined;
+    menuHandler = undefined;
+    buttonUpdater = undefined;
+};
 
 const newButton = (status, handler, selected = false) => {
     const button = document.createElement('button');
@@ -16,10 +37,13 @@ const newButton = (status, handler, selected = false) => {
     return button;
 };
 
-const newButtonGroup = (statuses, expander, activeStatus) => {
+const newButtonGroup = (statuses, expander, activeStatus, workspaceId) => {
     const buttonGroup = document.createElement('div');
     buttonGroup.classList.add('l-btn-group');
     buttonGroup.classList.add('zse-group');
+    if (workspaceId) {
+        buttonGroup.id = `${workspaceId}_zse`;
+    }
     for (let status of statuses) {
         buttonGroup.appendChild(newButton(status, generateClicker(status, expander), status === activeStatus));
     }
@@ -27,20 +51,17 @@ const newButtonGroup = (statuses, expander, activeStatus) => {
 };
 
 const generateDropUpFinder = (expander, handler) => {
-    if (menuHandler) {
-        console.log('Replacing menuHandler');
-        document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
-    }
-    menuHandler = handler;
-
     if (menuFinder) {
-        console.log('Replacing menuFinder');
+        console.log('Disconnecting menuFinder and clicking out of menu for good measure');
         menuFinder.disconnect();
         document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
     }
-    menuFinder = new MutationObserver ((mutations) => {
-        mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
+
+    menuHandler = handler;
+
+    menuFinder = new MutationObserver (mutations => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
                 const menu = node.querySelector ? node.querySelector('ul[data-garden-id="menus.menu_view"]') : undefined;
                 if (menu && menu.innerText.match(/.*submit as open.*/i)) {
                     console.log('Menu found');
@@ -61,8 +82,8 @@ const generateClicker = (status, expander) => {
     console.log(`Making clicker for ${status}`);
     return () => {
         console.log(`${status} click handler called`);
-        generateDropUpFinder(expander, (menu) => {
-            menu.childNodes.forEach((x) => {
+        generateDropUpFinder(expander, menu => {
+            menu.childNodes.forEach(x => {
                 if (x.innerText.trim().match(new RegExp(`.*${status}$`, 'i'))) {
                     console.log(`Clicking ${x.innerText.trim()}`);
                     x.click();
@@ -72,99 +93,130 @@ const generateClicker = (status, expander) => {
     };
 };
 
-const submitExpander = (buttonGroup) => {
-    let expanded = false;
-    buttonGroup.parentNode.childNodes.forEach((x) => {
-        if (x.classList.contains('zse-group')) {
-            expanded = true;
-        }
-    });
-    if (!expanded) {
-        const submit = buttonGroup.querySelector('button[data-garden-id="buttons.button"]');
-        const expander = buttonGroup.querySelector('button[data-garden-id="buttons.icon_button"]');
-        const currentStatus = submit.getElementsByTagName('STRONG')[0];
-        if (currentStatus.innerText) {
-            if (backupRetry) {
-                clearTimeout(backupRetry);
-                backupRetry = undefined;
-            }
-            console.log('Expanding button group now');
-            generateDropUpFinder(expander, (menu) => {
-                let buttons = [];
-                menu.childNodes.forEach((x) => {
-                    buttons.push(x.getElementsByTagName('STRONG')[0].innerText);
-                });
-                document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
-                const zseButtons = newButtonGroup(buttons, expander, currentStatus.innerText);
-                buttonGroup.parentNode.appendChild(zseButtons);
-                const updater = new MutationObserver ((mutations) => {
-                    mutations.forEach((mutation) => {
-                        mutation.addedNodes.forEach((node) => {
-                            if (node.tagName === 'STRONG') {
-                                console.log('Ticket status has changed, recreating button group');
-                                const updateFunction = () => {
-                                    updater.disconnect();
-                                    zseButtons.remove();
-                                    console.log('Updater triggering submitExpander');
-                                    submitExpander(buttonGroup);
-                                };
-                                let parent = buttonGroup.parentNode;
-                                while (parent.tagName !== 'SECTION') {
-                                    parent = parent.parentNode;
+const generateButtonUpdater = (workspace) => {
+    if (buttonUpdater) {
+        console.log(`#${workspace.id}: Replacing existing buttonUpdater`);
+        buttonUpdater.disconnect();
+    }
+    buttonUpdater = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+                if (node.tagName === 'STRONG') {
+                    console.log(`#${workspace.id}: Ticket status has changed, recreating button group`);
+                    const updateFn = () => {
+                        clearState();
+                        removeZseButtons(workspace);
+                        injectZseButtons(workspace);
+                    };
+                    const ticketSection = workspace.querySelector('section.ticket.working');
+                    if (ticketSection) {
+                        console.log(`#${workspace.id}: Waiting for ticket to submit`);
+                        const workingWaiter = new MutationObserver(mutations => {
+                            mutations.forEach(mutation => {
+                                let ready = false;
+                                if (mutation.attributeName === 'class' && !ticketSection.classList.contains('working')) {
+                                    ready = true;
                                 }
-                                if (parent.classList.contains('working')) {
-                                    console.log('waiting for ticket to submit');
-                                    const updateDelay = new MutationObserver((mutations) => {
-                                        let ready = false;
-                                        mutations.forEach((mutation) => {
-                                            if (mutation.attributeName === 'class' && !parent.classList.contains('working')) {
-                                                ready = true;
-                                            }
-                                        });
-                                        if (ready) {
-                                            console.log('ticket is submitted');
-                                            updateDelay.disconnect();
-                                            window.setTimeout(updateFunction, 5);
-                                        }
-                                    });
-                                    updateDelay.observe(parent, { attributes: true });
-                                } else {
-                                    updateFunction();
+                                if (ready) {
+                                    console.log(`#${workspace.id}: Ticket is submitted`);
+                                    workingWaiter.disconnect();
+                                    window.setTimeout(updateFn, 5);
                                 }
-                            }
+                            });
                         });
-                    });
-                });
-                updater.observe(buttonGroup, { childList: true, subtree: true });
+                        workingWaiter.observe(ticketSection, { attributes: true });
+                    } else {
+                        updateFn();
+                    }
+                }
             });
-            backupRetry = window.setTimeout(() => submitExpander(buttonGroup), 30);
-        } else {
-            const retry = new MutationObserver ((mutations) => {
-                mutations.forEach((mutation) => {
-                    mutation.addedNodes.forEach((node) => {
-                        if (node.tagName === 'STRONG' && node.innerText) {
-                            retry.disconnect();
-                            console.log(`Retrying to make button group in '${node.innerText}' state`);
-                            submitExpander(buttonGroup);
-                        }
-                    });
-                });
-            });
-            retry.observe(currentStatus.parentNode, { childList: true });
-        }
+        });
+    });
+    buttonUpdater.observe(workspace.querySelector(BUTTON_GROUP_SELECTOR), { childList: true, subtree: true });
+};
+
+const injectZseButtons = (workspace) => {
+    const zseGroup = document.getElementById(`${workspace.id}_zse`);
+    if (zseGroup) {
+        console.log(`#${workspace.id}: Not injecting buttons, already present`);
+        workspace.classList.add('zse-expanded');
     } else {
-        console.log('Aborting, button group already expanded');
+        const style = workspace.getAttribute('style');
+        if (!style || !style.match('.*display:\\s*none;.*')) {
+            removeZseButtons();
+            console.log(`#${workspace.id}: Injecting buttons`);
+            const buttonGroup = workspace.querySelector(BUTTON_GROUP_SELECTOR);
+            const submit = buttonGroup.querySelector('button[data-garden-id="buttons.button"]');
+            const expander = buttonGroup.querySelector('button[data-garden-id="buttons.icon_button"]');
+            const currentStatus = submit.getElementsByTagName('STRONG')[0];
+            if (currentStatus.innerText) {
+                generateDropUpFinder(expander, menu => {
+                    const buttons = menu.childNodes.map(x => x.querySelector('strong').innerText);
+                    document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
+                    zseButtons = newButtonGroup(buttons, expander, currentStatus.innerText, workspace.id);
+                    buttonGroup.parentNode.appendChild(zseButtons);
+                    generateButtonUpdater(workspace);
+                    workspace.classList.add('zse-expanded');
+                });
+            }
+            backupRetry = window.setTimeout(() => injectZseButtons(workspace), 50);
+        } else {
+            console.log(`#${workspace.id}: Retrying on a background workspace`);
+        }
     }
 };
 
-const buttonGroupFinder = (mutations) => {
-    mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-            console.dir(node);
-            const buttons = node.querySelectorAll(BUTTON_GROUP_SELECTOR);
-            console.log(buttons);
-            buttons.forEach((x) => {console.log('Main finder triggering submitExpander'); submitExpander(x);});
+const removeZseButtons = (workspace) => {
+    let buttonGroup;
+    if (workspace) {
+        buttonGroup = document.getElementById(`${workspace.id}_zse`);
+    } else {
+        buttonGroup = zseButtons;
+    }
+    if (buttonGroup) {
+        buttonGroup.remove();
+    } else {
+        if (workspace) {
+            console.log(`#${workspace.id}: There was no expanded button group`);
+        } else {
+            console.log('There was no saved button group');
+        }
+    }
+};
+
+const changeWorkspaceFocus = (workspace) => {
+    if (workspace.tagName === 'DIV') {
+        const style = workspace.getAttribute('style');
+        if (!style || !style.match('.*display:\\s*none;.*')) {
+            // A new workspace is in the foreground, clear up all state
+            clearState();
+            try {
+                console.log(`#${workspace.id}: ${workspace.querySelector('header nav .btn.active').innerText} has the foreground`);
+            } catch (e) {
+                console.log(`#${workspace.id}: Unknown ticket has the foreground`);
+            }
+            injectZseButtons(workspace);
+        } else {
+            console.log(`#${workspace.id}: Workspace backgrounded`);
+            removeZseButtons(workspace);
+            workspace.classList.remove('zse-expanded');
+        }
+    }
+};
+
+const workspaceHook = (mutations) => {
+    mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+            changeWorkspaceFocus(node);
+            const observer = new MutationObserver(workspaceWatcher);
+            observer.observe(node, { attributes: true, attributeFilter: ['style'] });
         });
+    });
+};
+
+const workspaceWatcher = (mutations) => {
+    mutations.forEach(mutation => {
+        changeWorkspaceFocus(mutation.target);
     });
 };
 
@@ -172,11 +224,13 @@ const mutationLoader = () => {
     console.log('looking for #main_panes');
     const mainPanes = document.getElementById('main_panes');
     if (mainPanes) {
-        const observer = new MutationObserver(buttonGroupFinder);
+        const observer = new MutationObserver(workspaceHook);
         observer.observe(mainPanes, { childList: true });
-        console.log('listening');
-        document.querySelectorAll(BUTTON_GROUP_SELECTOR).forEach(submitExpander);
-        console.log('scanned');
+        console.log('Observer is listening on #main_panes');
+        mainPanes.childNodes.forEach(x => {
+            changeWorkspaceFocus(x);
+        });
+        console.log('#main_panes workspaces scanned');
     } else {
         window.setTimeout(mutationLoader, 100);
     }
