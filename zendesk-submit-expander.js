@@ -146,20 +146,24 @@ const injectZseButtons = (workspace) => {
             removeZseButtons();
             console.log(`#${workspace.id}: Injecting buttons`);
             const buttonGroup = workspace.querySelector(BUTTON_GROUP_SELECTOR);
-            const submit = buttonGroup.querySelector('button[data-garden-id="buttons.button"]');
-            const expander = buttonGroup.querySelector('button[data-garden-id="buttons.icon_button"]');
-            const currentStatus = submit.getElementsByTagName('STRONG')[0];
-            if (currentStatus.innerText) {
-                generateDropUpFinder(expander, menu => {
-                    const buttons = menu.childNodes.map(x => x.querySelector('strong').innerText);
-                    document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
-                    zseButtons = newButtonGroup(buttons, expander, currentStatus.innerText, workspace.id);
-                    buttonGroup.parentNode.appendChild(zseButtons);
-                    generateButtonUpdater(workspace);
-                    workspace.classList.add('zse-expanded');
-                });
+            if (buttonGroup) {
+                const submit = buttonGroup.querySelector('button[data-garden-id="buttons.button"]');
+                const expander = buttonGroup.querySelector('button[data-garden-id="buttons.icon_button"]');
+                const currentStatus = submit.getElementsByTagName('STRONG')[0];
+                if (currentStatus.innerText) {
+                    generateDropUpFinder(expander, menu => {
+                        const buttons = menu.childNodes.map(x => x.querySelector('strong').innerText);
+                        document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
+                        zseButtons = newButtonGroup(buttons, expander, currentStatus.innerText, workspace.id);
+                        buttonGroup.parentNode.appendChild(zseButtons);
+                        generateButtonUpdater(workspace);
+                        workspace.classList.add('zse-expanded');
+                    });
+                }
+                backupRetry = window.setTimeout(() => injectZseButtons(workspace), 50);
+            } else {
+                console.log(`#${workspace.id}: Ticket is closed`);
             }
-            backupRetry = window.setTimeout(() => injectZseButtons(workspace), 50);
         } else {
             console.log(`#${workspace.id}: Retrying on a background workspace`);
         }
