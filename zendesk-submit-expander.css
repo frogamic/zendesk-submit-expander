@@ -44,7 +44,7 @@
 }
 
 /* Hide the default button and menu */
-.workspace.zse-expanded .ticket-resolution-footer div[data-garden-id='buttons.button_group_view'] {
+.workspace .ticket-resolution-footer div[data-garden-id='buttons.button_group_view'] {
   display: none;
 }
 
@@ -60,20 +60,20 @@
 }
 
 @media screen and (max-width: 1220px) {
-  .split_pane.ticket > .pane.right {
+  .workspace.zse-expanded .split_pane.ticket > .pane.right {
     bottom: 100px !important;
   }
 
-  .ticket-resolution-footer,
-  .ticket-resolution-footer-pane {
+  .workspace.zse-expanded .ticket-resolution-footer,
+  .workspace.zse-expanded .ticket-resolution-footer-pane {
     height: 98px !important;
   }
 
-  .action_buttons {
+  .workspace.zse-expanded .ticket-resolution-footer .action_buttons {
     width: 100% !important;
   }
 
-  .macro-selector {
+  .workspace.zse-expanded .ticket-resolution-footer .macro-selector {
     width: auto !important;
     display: block !important;
     margin: 7px 10px 7px 10px !important;
