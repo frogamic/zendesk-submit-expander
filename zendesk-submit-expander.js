@@ -11,11 +11,9 @@ const clearState = () => {
         window.clearTimeout(backupRetry);
     }
     if (buttonUpdater) {
-        console.log('Disconnecting buttonUpdater');
         buttonUpdater.disconnect();
     }
     if (menuFinder) {
-        console.log('Disconnecting menuFinder and clicking out of menu for good measure');
         menuFinder.disconnect();
         document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
     }
@@ -64,7 +62,6 @@ const generateDropUpFinder = (expander, handler) => {
             mutation.addedNodes.forEach(node => {
                 const menu = node.querySelector ? node.querySelector('ul[data-garden-id="menus.menu_view"]') : undefined;
                 if (menu && menu.innerText.match(/.*submit as open.*/i)) {
-                    console.log('Menu found');
                     menuFinder.disconnect();
                     menuFinder = undefined;
                     menuHandler(menu);
@@ -79,13 +76,11 @@ const generateDropUpFinder = (expander, handler) => {
 };
 
 const generateClicker = (status, expander) => {
-    console.log(`Making clicker for ${status}`);
     return () => {
         console.log(`${status} click handler called`);
         generateDropUpFinder(expander, menu => {
             menu.childNodes.forEach(x => {
                 if (x.innerText.trim().match(new RegExp(`.*${status}$`, 'i'))) {
-                    console.log(`Clicking ${x.innerText.trim()}`);
                     x.click();
                 }
             });
@@ -95,7 +90,6 @@ const generateClicker = (status, expander) => {
 
 const generateButtonUpdater = (workspace) => {
     if (buttonUpdater) {
-        console.log(`#${workspace.id}: Replacing existing buttonUpdater`);
         buttonUpdater.disconnect();
     }
     buttonUpdater = new MutationObserver(mutations => {
@@ -118,7 +112,6 @@ const generateButtonUpdater = (workspace) => {
                                     ready = true;
                                 }
                                 if (ready) {
-                                    console.log(`#${workspace.id}: Ticket is submitted`);
                                     workingWaiter.disconnect();
                                     window.setTimeout(updateFn, 5);
                                 }
@@ -138,7 +131,6 @@ const generateButtonUpdater = (workspace) => {
 const injectZseButtons = (workspace) => {
     const zseGroup = document.getElementById(`${workspace.id}_zse`);
     if (zseGroup) {
-        console.log(`#${workspace.id}: Not injecting buttons, already present`);
         workspace.classList.add('zse-expanded');
     } else {
         const style = workspace.getAttribute('style');
@@ -164,11 +156,7 @@ const injectZseButtons = (workspace) => {
                     window.clearTimeout(backupRetry);
                 }
                 backupRetry = window.setTimeout(() => injectZseButtons(workspace), 50);
-            } else {
-                console.log(`#${workspace.id}: Ticket is closed`);
             }
-        } else {
-            console.log(`#${workspace.id}: Retrying on a background workspace`);
         }
     }
 };
@@ -182,12 +170,6 @@ const removeZseButtons = (workspace) => {
     }
     if (buttonGroup) {
         buttonGroup.remove();
-    } else {
-        if (workspace) {
-            console.log(`#${workspace.id}: There was no expanded button group`);
-        } else {
-            console.log('There was no saved button group');
-        }
     }
 };
 
@@ -228,16 +210,13 @@ const workspaceWatcher = (mutations) => {
 };
 
 const mutationLoader = () => {
-    console.log('looking for #main_panes');
     const mainPanes = document.getElementById('main_panes');
     if (mainPanes) {
         const observer = new MutationObserver(workspaceHook);
         observer.observe(mainPanes, { childList: true });
-        console.log('Observer is listening on #main_panes');
         mainPanes.childNodes.forEach(x => {
             changeWorkspaceFocus(x);
         });
-        console.log('#main_panes workspaces scanned');
     } else {
         window.setTimeout(mutationLoader, 100);
     }

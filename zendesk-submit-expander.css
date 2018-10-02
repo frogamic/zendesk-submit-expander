@@ -8,12 +8,8 @@
 
 .zse-status-Solved { --color-background: #68737D; }
 
-.zse-group {
-  padding-top: 2px;
-}
-
 .zse-group button {
-  height: 35px;
+  height: 39px;
   padding-left: 5px;
   padding-right: 5px;
   line-height: 18px;
@@ -46,17 +42,6 @@
 /* Hide the default button and menu */
 .workspace .ticket-resolution-footer div[data-garden-id='buttons.button_group_view'] {
   display: none;
-}
-
-/* Beta branding */
-#z-icon::before {
-  content: "ZSE Beta";
-  font-size: 12px;
-  font-weight: 500;
-}
-
-#z-icon {
-  bottom: 2.5em !important;
 }
 
 @media screen and (max-width: 1220px) {
