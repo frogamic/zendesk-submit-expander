@@ -1,144 +1,81 @@
-@media (min-width: 1120px) {
-  div.post-save-actions {
-    margin: 0px !important;
+.zse-status-New { --color-background: #F5CA00; }
+
+.zse-status-Open { --color-background: #E82A2A; }
+
+.zse-status-Pending { --color-background: #259ECB; }
+
+.zse-status-On-hold { --color-background: #2F3941; }
+
+.zse-status-Solved { --color-background: #68737D; }
+
+.zse-group {
+  padding-top: 2px;
+}
+
+.zse-group button {
+  height: 35px;
+  padding-left: 5px;
+  padding-right: 5px;
+  line-height: 18px;
+  font-size: 14px;
+  color: #2F3941;
+  max-width: 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+}
+
+.zse-group button span {
+  font-size: 99%;
+}
+
+.zse-group button span::before {
+  content: " ";
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background-color: var(--color-background);
+  margin-right: 3px;
+}
+
+.zse-group button.is-selected {
+  background-color: #E9EBED;
+  font-weight: 550;
+}
+
+/* Hide the default button and menu */
+.workspace .ticket-resolution-footer div[data-garden-id='buttons.button_group_view'] {
+  display: none;
+}
+
+/* Beta branding */
+#z-icon::before {
+  content: "ZSE Beta";
+  font-size: 12px;
+  font-weight: 500;
+}
+
+#z-icon {
+  bottom: 2.5em !important;
+}
+
+@media screen and (max-width: 1220px) {
+  .workspace.zse-expanded .split_pane.ticket > .pane.right {
+    bottom: 100px !important;
   }
 
-  div:not(.modal-footer)>div.ticket_submit_buttons:not(.followup)>button {
-    display: none;
+  .workspace.zse-expanded .ticket-resolution-footer,
+  .workspace.zse-expanded .ticket-resolution-footer-pane {
+    height: 98px !important;
   }
 
-  div.modal-footer>div.ticket_submit_buttons:not(.followup)>button.dropdown-toggle {
-    display: none;
+  .workspace.zse-expanded .ticket-resolution-footer .action_buttons {
+    width: 100% !important;
   }
 
-  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu {
-    display: inline-block;
-    top: inherit !important;
-    bottom: inherit !important;
-    right: inherit !important;
-    left: inherit !important;
-    position: relative !important;
-    border: none !important;
-    background: none !important;
-    box-shadow: none !important;
-    padding: 0px !important;
-    font-size: 0px !important;
-  }
-
-  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li,
-  div.post-save-actions>div.dropdown-container>span.dropdown-toggle,
-  div.ticket-resolution-footer-pane>button.next {
-    border: 1px solid #d3d3d3 !important;
-    margin-top: 8px !important;
-    margin-left: 0px !important;
-    margin-right: 0px !important;
-    padding: 8px 5px;
-  }
-
-  div.ticket-resolution-footer-pane>button.next {
-    border: 1px solid #d3d3d3 !important;
-    border-left: none !important;
-    border-right: none !important;
-    height: 35px;
-    border-radius: 0px;
-    margin-top: 7px !important;
-    margin-left: -1px !important;
-    margin-right: 0px !important;
-    padding: 6px 5px;
-    font-size: 12px !important;
-    Font-weight: bold !important;
-  }
-
-  div.modal-footer>div.ticket_submit_buttons>button.save {
-    border: 1px solid #d3d3d3 !important;
-    margin-top: 7px !important;
-    padding: 6px 5px;
-    font-size: 12px !important;
-    height: 35px !important;
-    width: 66px !important;
-    min-width: inherit !important;
-    background-color: #fff !important;
-    color: black !important;
-    Font-weight: bold !important;
-  }
-
-  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li {
-    display: inline-block;
-    font-size: 0px !important;
-    color: #fff !important;
-    width: 55px;
-    height: 18px;
-    text-align: center;
-    padding-bottom: 7px;
-  }
-
-  div.post-save-actions>div.dropdown-container>span.dropdown-toggle {
-    display: inline-block;
-    height: 18px;
-    margin-top: 7px !important;
-    padding-bottom: 7px;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    padding-left: 10px;
-    background-color: #fff;
-  }
-
-  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li:last-child {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-  }
-
-  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li {
-    border-left: none !important;
-  }
-
-  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li strong {
-    font-size: 12px !important;
-  }
-
-  .ticket_submit_buttons>ul.dropdown-menu li.new {
-    background-color: #F5CA00;
-  }
-
-  .ticket_submit_buttons>ul.dropdown-menu li.open {
-    background-color: #E82A2A;
-  }
-
-  .ticket_submit_buttons>ul.dropdown-menu li.pending {
-    background-color: #59BBE0;
-  }
-
-  .ticket_submit_buttons>ul.dropdown-menu li.hold {
-    background-color: #000;
-  }
-
-  .ticket_submit_buttons>ul.dropdown-menu li.solved {
-    background-color: #828282;
-  }
-
-  .ticket_submit_buttons:not(.followup) li.status:not(.disabled):after {
-    content: none !important;
-  }
-
-  div.modal-footer>div.ticket_submit_buttons>button.save:hover,
-  div.post-save-actions>div.dropdown-container>span.dropdown-toggle:hover,
-  .ticket_submit_buttons:not(.followup)>ul.dropdown-menu li:not(.hold):hover {
-    border-color: #aaa !important;
-    border-left: 1px solid #aaa !important;
-    margin-left: -1px !important;
-    z-index: 1000;
-    filter: brightness(95%);
-  }
-
-  .ticket_submit_buttons>ul.dropdown-menu li.hold:hover {
-    border-color: #aaa !important;
-    border-left: 1px solid #aaa !important;
-    margin-left: -1px !important;
-    z-index: 1000;
-  }
-
-  div.ticket-resolution-footer-pane>button.next:hover {
-    border: 1px solid #aaa !important;
-    z-index: 1000;
+  .workspace.zse-expanded .ticket-resolution-footer .macro-selector {
+    width: auto !important;
+    display: block !important;
+    margin: 7px 10px 7px 10px !important;
   }
 }
