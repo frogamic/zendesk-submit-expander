@@ -160,6 +160,9 @@ const injectZseButtons = (workspace) => {
                         workspace.classList.add('zse-expanded');
                     });
                 }
+                if (backupRetry) {
+                    window.clearTimeout(backupRetry);
+                }
                 backupRetry = window.setTimeout(() => injectZseButtons(workspace), 50);
             } else {
                 console.log(`#${workspace.id}: Ticket is closed`);
