@@ -20,6 +20,10 @@
   width: 80px !important;
 }
 
+.zse-group button:hover {
+  background-color: #E9EBED;
+}
+
 .zse-group button span {
   font-size: 99%;
 }
@@ -42,6 +46,16 @@
 /* Hide the default button and menu */
 .workspace .ticket-resolution-footer div[data-garden-id='buttons.button_group_view'] {
   display: none;
+}
+
+/* Make the macro selector taller and move it up to match the buttons */
+.ticket-resolution-footer .macro-selector {
+  margin-top: 5px;
+}
+
+.ticket-resolution-footer .macro-selector button,
+.ticket-resolution-footer .macro-selector input {
+  height: 39px;
 }
 
 @media screen and (max-width: 1220px) {
