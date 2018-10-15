@@ -58,6 +58,10 @@
   height: 39px;
 }
 
+.macro-selector .zd-combo-selectmenu.zd-state-open:before {
+  margin-top: 12px !important;
+}
+
 @media screen and (max-width: 1220px) {
   .workspace.zse-expanded .split_pane.ticket > .pane.right {
     bottom: 100px !important;
