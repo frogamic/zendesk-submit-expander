@@ -63,6 +63,7 @@
 }
 
 @media screen and (max-width: 1220px) {
+  .workspace.apps:not(.ticket_editor_app),
   .workspace.zse-expanded .split_pane.ticket > .pane.right {
     bottom: 100px !important;
   }
