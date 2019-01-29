@@ -129,6 +129,9 @@ const generateButtonUpdater = (workspace) => {
 };
 
 const injectZseButtons = (workspace) => {
+    if (workspace.classList.contains('search')) {
+        return;
+    }
     const zseGroup = document.getElementById(`${workspace.id}_zse`);
     if (zseGroup) {
         workspace.classList.add('zse-expanded');
