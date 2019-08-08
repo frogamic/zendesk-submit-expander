@@ -62,6 +62,12 @@
   margin-top: 12px !important;
 }
 
+.MenuView__MenuWrapper-sc-1inler5-1 {
+  position: absolute;
+  top: -500px;
+  left: -500px;
+}
+
 @media screen and (max-width: 1220px) {
   .workspace.apps:not(.ticket_editor_app),
   .workspace.zse-expanded .split_pane.ticket > .pane.right {
