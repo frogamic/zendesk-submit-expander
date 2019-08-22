@@ -35,20 +35,20 @@ const newButton = (status, handler, selected = false) => {
     return button;
 };
 
-const newButtonGroup = (statuses, expander, activeStatus, workspaceId) => {
+const newButtonGroup = (workspace, statuses, activeStatus) => {
     const buttonGroup = document.createElement('div');
     buttonGroup.classList.add('l-btn-group');
     buttonGroup.classList.add('zse-group');
-    if (workspaceId) {
-        buttonGroup.id = `${workspaceId}_zse`;
+    if (workspace.id) {
+        buttonGroup.id = `${workspace.id}_zse`;
     }
     for (let status of statuses) {
-        buttonGroup.appendChild(newButton(status, generateClicker(status, expander), status === activeStatus));
+        buttonGroup.appendChild(newButton(status, generateClicker(workspace, status), status === activeStatus));
     }
     return buttonGroup;
 };
 
-const generateDropUpFinder = (expander, handler) => {
+const generateDropUpFinder = (workspace, handler) => {
     if (menuFinder) {
         console.log('Disconnecting menuFinder and clicking out of menu for good measure');
         menuFinder.disconnect();
@@ -70,15 +70,15 @@ const generateDropUpFinder = (expander, handler) => {
             });
         });
     });
-    menuFinder.observe(document.getElementsByTagName('BODY')[0], { childList: true });
+    menuFinder.observe(workspace.querySelector(BUTTON_GROUP_SELECTOR), { childList: true });
     console.log('Triggering submit menu');
-    expander.click();
+    workspace.querySelector(BUTTON_GROUP_SELECTOR).querySelector('button[data-garden-id="buttons.icon_button"]').click();
 };
 
-const generateClicker = (status, expander) => {
+const generateClicker = (workspace, status) => {
     return () => {
         console.log(`${status} click handler called`);
-        generateDropUpFinder(expander, menu => {
+        generateDropUpFinder(workspace, menu => {
             menu.childNodes.forEach(x => {
                 if (x.innerText.trim().match(new RegExp(`.*${status}$`, 'i'))) {
                     x.click();
@@ -143,13 +143,12 @@ const injectZseButtons = (workspace) => {
             const buttonGroup = workspace.querySelector(BUTTON_GROUP_SELECTOR);
             if (buttonGroup) {
                 const submit = buttonGroup.querySelector('button[data-garden-id="buttons.button"]');
-                const expander = buttonGroup.querySelector('button[data-garden-id="buttons.icon_button"]');
                 const currentStatus = submit.getElementsByTagName('STRONG')[0];
                 if (currentStatus.innerText) {
-                    generateDropUpFinder(expander, menu => {
+                    generateDropUpFinder(workspace, menu => {
                         const buttons = menu.childNodes.map(x => x.querySelector('strong').innerText);
                         document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
-                        zseButtons = newButtonGroup(buttons, expander, currentStatus.innerText, workspace.id);
+                        zseButtons = newButtonGroup(workspace, buttons, currentStatus.innerText);
                         buttonGroup.parentNode.appendChild(zseButtons);
                         generateButtonUpdater(workspace);
                         workspace.classList.add('zse-expanded');
