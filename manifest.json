@@ -1,7 +1,7 @@
 {
     "name": "Zendesk Submit Expander",
     "short_name": "ZSE",
-    "version": "2.0.2.0",
+    "version": "2.0.3.0",
     "manifest_version": 2,
     "description": "Takes the ticket submit buttons from the drop-up box in the Zendesk agent view and puts them into a button group instead.",
     "author": "Dominic Shelton",
@@ -20,8 +20,7 @@
     "content_scripts": [
         {
             "matches": ["*://*.zendesk.com/agent/*"],
-            "css": ["zendesk-submit-expander.css"],
-            "js": ["zendesk-submit-expander.js"]
+            "css": ["rip.css"]
         }
     ]
 }

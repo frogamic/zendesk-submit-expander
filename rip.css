@@ -1,0 +1,9 @@
+.MenuContainer__MenuWrapper-qwv4oz-0 > .MenuView__MenuWrapper-sc-1inler5-1 > ul::after {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  content: "ZSE is broken right now";
+  z-index: 1001;
+  background-color: #fff;
+  font-size: smaller;
+}

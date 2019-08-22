@@ -1,7 +1,7 @@
 MANIFEST	:= manifest.json
 PACKAGE 	:= zendesk-submit-expander.zip
 ICONS		:= icon16.png icon48.png icon128.png
-SOURCES		:= zendesk-submit-expander.js zendesk-submit-expander.css
+SOURCES		:= rip.css
 
 .PHONY: all clean
 
