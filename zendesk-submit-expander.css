@@ -68,20 +68,20 @@
 
 @media screen and (max-width: 1220px) {
   .workspace.apps:not(.ticket_editor_app),
-  .workspace.zse-expanded .split_pane.ticket > .pane.right {
+  .workspace .split_pane.ticket > .pane.right {
     bottom: 100px !important;
   }
 
-  .workspace.zse-expanded .ticket-resolution-footer,
-  .workspace.zse-expanded .ticket-resolution-footer-pane {
+  .workspace .ticket-resolution-footer,
+  .workspace .ticket-resolution-footer-pane {
     height: 98px !important;
   }
 
-  .workspace.zse-expanded .ticket-resolution-footer .action_buttons {
+  .workspace .ticket-resolution-footer .action_buttons {
     width: 100% !important;
   }
 
-  .workspace.zse-expanded .ticket-resolution-footer .macro-selector {
+  .workspace .ticket-resolution-footer .macro-selector {
     width: auto !important;
     display: block !important;
     margin: 7px 10px 7px 10px !important;
