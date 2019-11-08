@@ -26,6 +26,9 @@ const clearState = () => {
 const newButton = (status, handler, selected = false) => {
     const button = document.createElement('button');
     button.classList.add('c-btn');
+    if (status=="En attente"){
+        status="En_attente";
+    }
     button.classList.add(`zse-status-${status}`);
     if (selected) {
         button.classList.add('is-selected');
@@ -78,7 +81,7 @@ const generateDropUpFinder = (workspace, handler) => {
                 })
             }
             const menu = menutemp;
-            if (menu && menu.innerText.match(/.*submit as open.*/i)) {
+            if (menu) {
                 menuFinder.disconnect();
                 menuFinder = undefined;
                 menuHandler(menu);
