@@ -59,18 +59,34 @@ const generateDropUpFinder = (workspace, handler) => {
 
     menuFinder = new MutationObserver (mutations => {
         mutations.forEach(mutation => {
-            mutation.addedNodes.forEach(node => {
-                const menu = node.querySelector ? node.querySelector('ul[data-garden-id="menus.menu_view"]') : undefined;
-                if (menu && menu.innerText.match(/.*submit as open.*/i)) {
-                    menuFinder.disconnect();
-                    menuFinder = undefined;
-                    menuHandler(menu);
-                    menuHandler = undefined;
+            node = mutation.target;
+            for (let j = 0; j < 5; j++) {
+                menutemp = node.querySelector ? node.querySelector('div[data-garden-id="buttons.button_group_view"]') : undefined;
+                if(!menutemp || menutemp == undefined){
+                    node = node.parentNode;
                 }
-            });
+            }
+            for (let i = 0; i < 10; i++) {
+                menutemp.childNodes.forEach(x => {
+                    if (x.tagName == "DIV"){
+                        menutemp = x;
+                    } else {
+                        if(x.tagName == "UL"){
+                            menutemp = x;
+                        }
+                    }
+                })
+            }
+            const menu = menutemp;
+            if (menu && menu.innerText.match(/.*submit as open.*/i)) {
+                menuFinder.disconnect();
+                menuFinder = undefined;
+                menuHandler(menu);
+                menuHandler = undefined;
+            }
         });
     });
-    menuFinder.observe(workspace.querySelector(BUTTON_GROUP_SELECTOR), { childList: true });
+    menuFinder.observe(workspace.querySelector(BUTTON_GROUP_SELECTOR), { childList: true, attributes: true, subtree: true });
     console.log('Triggering submit menu');
     workspace.querySelector(BUTTON_GROUP_SELECTOR).querySelector('button[data-garden-id="buttons.icon_button"]').click();
 };
