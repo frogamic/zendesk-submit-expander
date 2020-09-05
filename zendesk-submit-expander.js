@@ -3,7 +3,7 @@ HTMLCollection.prototype.forEach = Array.prototype.forEach;
 NodeList.prototype.map = Array.prototype.map;
 
 let backupRetry, menuHandler, menuFinder, buttonUpdater, zseButtons;
-const BUTTON_GROUP_SELECTOR = '.ticket-resolution-footer div[data-garden-id="buttons.button_group_view"]';
+const BUTTON_GROUP_SELECTOR = 'footer div[data-garden-id="buttons.button_group_view"]';
 
 const clearState = () => {
     if (backupRetry) {

@@ -44,17 +44,17 @@
 }
 
 /* Hide the default button and menu */
-.ticket-resolution-footer div[data-garden-id='buttons.button_group_view'] {
+footer div[data-garden-id='buttons.button_group_view'] {
   display: none;
 }
 
 /* Make the macro selector taller and move it up to match the buttons */
-.ticket-resolution-footer .macro-selector {
+footer .macro-selector {
   margin-top: 5px;
 }
 
-.ticket-resolution-footer .macro-selector button,
-.ticket-resolution-footer .macro-selector input {
+footer .macro-selector button,
+footer .macro-selector input {
   height: 39px;
 }
 
@@ -62,7 +62,7 @@
   margin-top: 12px !important;
 }
 
-.ticket-resolution-footer div[data-garden-id="buttons.button_group_view"] .hVQFbW {
+footer div[data-garden-id="buttons.button_group_view"] .hVQFbW {
   display: none !important;
 }
 
@@ -72,16 +72,16 @@
     bottom: 100px !important;
   }
 
-  .workspace .ticket-resolution-footer,
-  .workspace .ticket-resolution-footer-pane {
+  .workspace footer,
+  .workspace footer-pane {
     height: 98px !important;
   }
 
-  .workspace .ticket-resolution-footer .action_buttons {
+  .workspace footer .action_buttons {
     width: 100% !important;
   }
 
-  .workspace .ticket-resolution-footer .macro-selector {
+  .workspace footer .macro-selector {
     width: auto !important;
     display: block !important;
     margin: 7px 10px 7px 10px !important;
