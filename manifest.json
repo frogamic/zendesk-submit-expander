@@ -19,7 +19,8 @@
     },
     "content_scripts": [
         {
-            "matches": ["*://*.zendesk.com/agent/*"],
+            "matches": ["*://*.zendesk.com/agent/tickets/*"],
+            "run_at": "document_start",
             "css": ["zendesk-submit-expander.css"],
             "js": ["zendesk-submit-expander.js"]
         }
