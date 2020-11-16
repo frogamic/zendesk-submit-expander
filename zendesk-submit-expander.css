@@ -1,41 +1,49 @@
-.zse-status-New { --color-background: #FFB648; }
+.zse-status-new { --color-background: #FFB648; }
 
-.zse-status-Open { --color-background: #E34F32; }
+.zse-status-open { --color-background: #E34F32; }
 
-.zse-status-Pending { --color-background: #3091EC; }
+.zse-status-pending { --color-background: #3091EC; }
 
-.zse-status-On-hold { --color-background: #2F3941; }
+.zse-status-hold { --color-background: #2F3941; }
 
-.zse-status-Solved { --color-background: #87929D; }
+.zse-status-solved { --color-background: #87929D; }
 
 .zse-group button {
   height: 39px;
-  padding-left: 5px;
+  padding-left: 19px;
   padding-right: 5px;
   line-height: 18px;
   font-size: 14px;
   color: #2F3941;
-  max-width: 80px !important;
+  max-width: 100px !important;
   min-width: 80px !important;
-  width: 80px !important;
+  overflow: hidden;
+  position: relative;
 }
 
 .zse-group button:hover {
   background-color: #E9EBED;
 }
 
-.zse-group button span {
+.zse-group button div {
   font-size: 99%;
+  white-space: break-spaces;
+  display: inline-block;
+  word-wrap: break-word;
+  max-width: 80px;
 }
 
-.zse-group button span::before {
-  content: " ";
+.zse-group button::before {
+  content: "";
   display: inline-block;
   width: 11px;
   height: 11px;
   border-radius: 2px;
   background-color: var(--color-background);
-  margin-right: 3px;
+  vertical-align: middle;
+  position: absolute;
+  top: 14px;
+  left: 6px;
 }
 
 .zse-group button.is-selected {
@@ -46,6 +54,10 @@
 /* Hide the default button and menu */
 footer div[data-garden-id='buttons.button_group_view'] {
   display: none;
+}
+
+footer div[data-garden-id="buttons.button_group_view"] .hVQFbW {
+  display: none !important;
 }
 
 /* Make the macro selector taller and move it up to match the buttons */
@@ -60,10 +72,6 @@ footer .macro-selector input {
 
 .macro-selector .zd-combo-selectmenu.zd-state-open:before {
   margin-top: 12px !important;
-}
-
-footer div[data-garden-id="buttons.button_group_view"] .hVQFbW {
-  display: none !important;
 }
 
 @media screen and (max-width: 1220px) {

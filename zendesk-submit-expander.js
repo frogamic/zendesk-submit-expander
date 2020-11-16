@@ -1,9 +1,11 @@
 HTMLCollection.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
 HTMLCollection.prototype.forEach = Array.prototype.forEach;
+HTMLCollection.prototype.some = Array.prototype.some;
 NodeList.prototype.map = Array.prototype.map;
 
 let backupRetry, menuHandler, menuFinder, buttonUpdater, zseButtons;
 const BUTTON_GROUP_SELECTOR = 'footer div[data-garden-id="buttons.button_group_view"]';
+const STATUSES = ['open', 'solved', 'pending', 'hold'];
 
 const clearState = () => {
     if (backupRetry) {
@@ -23,29 +25,36 @@ const clearState = () => {
     buttonUpdater = undefined;
 };
 
-const newButton = (status, handler, selected = false) => {
+const newButton = (text, status, handler, selected = false) => {
     const button = document.createElement('button');
     button.classList.add('c-btn');
     button.classList.add(`zse-status-${status}`);
     if (selected) {
         button.classList.add('is-selected');
     }
-    button.innerHTML = `<span>${status}</span>`;
+    button.innerHTML = `<div>${text}</div>`;
     button.addEventListener('click', handler);
     return button;
 };
 
-const newButtonGroup = (workspace, statuses, activeStatus) => {
+const newButtonGroup = (workspace, buttons, activeStatus) => {
     const buttonGroup = document.createElement('div');
     buttonGroup.classList.add('l-btn-group');
     buttonGroup.classList.add('zse-group');
     if (workspace.id) {
         buttonGroup.id = `${workspace.id}_zse`;
     }
-    for (let status of statuses) {
-        buttonGroup.appendChild(newButton(status, generateClicker(workspace, status), status === activeStatus));
+    for (const { status, text } of buttons) {
+        buttonGroup.appendChild(newButton(text, status, generateClicker(workspace, status), text === activeStatus));
     }
     return buttonGroup;
+};
+
+const getButtonStatus = element => {
+    const matches = element.dataset.trackingId && element.dataset.trackingId.match(/^submit_button-menu-(.*)/);
+    if (matches) {
+        return matches[1];
+    }
 };
 
 const generateDropUpFinder = (workspace, handler) => {
@@ -58,33 +67,30 @@ const generateDropUpFinder = (workspace, handler) => {
     menuHandler = handler;
 
     menuFinder = new MutationObserver (mutations => {
-        mutations.forEach(mutation => {
-            node = mutation.target;
+        for (const mutation of mutations) {
+            let node = mutation.target;
+            let menutemp;
             for (let j = 0; j < 5; j++) {
-                menutemp = node.querySelector ? node.querySelector('div[data-garden-id="buttons.button_group_view"]') : undefined;
-                if(!menutemp || menutemp == undefined){
+                menutemp = node && node.querySelector ? node.querySelector('div[data-garden-id="buttons.button_group_view"]') : undefined;
+                if(!menutemp || menutemp === undefined){
                     node = node.parentNode;
                 }
             }
             for (let i = 0; i < 10; i++) {
-                menutemp.childNodes.forEach(x => {
-                    if (x.tagName == "DIV"){
+                menutemp && menutemp.childNodes.forEach(x => {
+                    if (x.tagName === 'DIV' || x.tagName === 'UL'){
                         menutemp = x;
-                    } else {
-                        if(x.tagName == "UL"){
-                            menutemp = x;
-                        }
                     }
-                })
+                });
             }
             const menu = menutemp;
-            if (menu && menu.innerText.match(/.*submit as open.*/i)) {
-                menuFinder.disconnect();
+            if (menu && menu.children.some(child => STATUSES.includes(getButtonStatus(child)))) {
+                menuFinder && menuFinder.disconnect();
                 menuFinder = undefined;
-                menuHandler(menu);
+                menuHandler && menuHandler(menu);
                 menuHandler = undefined;
             }
-        });
+        }
     });
     menuFinder.observe(workspace.querySelector(BUTTON_GROUP_SELECTOR), { childList: true, attributes: true, subtree: true });
     console.log('Triggering submit menu');
@@ -96,7 +102,7 @@ const generateClicker = (workspace, status) => {
         console.log(`${status} click handler called`);
         generateDropUpFinder(workspace, menu => {
             menu.childNodes.forEach(x => {
-                if (x.innerText.trim().match(new RegExp(`.*${status}$`, 'i'))) {
+                if (getButtonStatus(x) === status) {
                     x.click();
                 }
             });
@@ -162,7 +168,10 @@ const injectZseButtons = (workspace) => {
                 const currentStatus = submit.getElementsByTagName('STRONG')[0];
                 if (currentStatus.innerText) {
                     generateDropUpFinder(workspace, menu => {
-                        const buttons = menu.childNodes.map(x => x.querySelector('strong').innerText);
+                        const buttons = menu.childNodes.map(x => ({
+                            text: x.querySelector('strong').innerText,
+                            status: getButtonStatus(x)
+                        }));
                         document.getElementsByTagName('BODY')[0].dispatchEvent(new Event('mousedown', { bubbles: true, }));
                         zseButtons = newButtonGroup(workspace, buttons, currentStatus.innerText);
                         buttonGroup.parentNode.appendChild(zseButtons);
